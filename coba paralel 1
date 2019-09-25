@@ -1,0 +1,114 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "Untitled12.ipynb",
+      "provenance": [],
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/YuliusDennyPrabowo/pandas/blob/master/coba%20paralel%201\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "anX8Dae5wCvc",
+        "colab_type": "code",
+        "colab": {}
+      },
+      "source": [
+        "import multiprocessing"
+      ],
+      "execution_count": 0,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "6SLwnYgVwFyJ",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 54
+        },
+        "outputId": "bf2e5c8d-ea7a-4c83-a82d-338cf11030d0"
+      },
+      "source": [
+        "import numpy\n",
+        "import scipy\n",
+        "import time\n",
+        "\n",
+        "def f(z):\n",
+        "    x=z[1]*scipy.random.standard_normal(100000)+z[0]\n",
+        "    return x.sum()\n",
+        "\n",
+        "n=3000\n",
+        "X=numpy.linspace(-1,1,n) # mean\n",
+        "Y=numpy.linspace(0.1,1,n) # std. dev.\n",
+        "\n",
+        "# creates list of arguments [Xi, Yi]\n",
+        "pargs=[]\t# this is a list of lists!\n",
+        "for i in range(X.size):\n",
+        "\tpargs.append([X[i],Y[i]])\n",
+        " \n",
+        "ncores=multiprocessing.cpu_count() # number of cores\n",
+        "pool = multiprocessing.Pool(processes=ncores) # initializes parallel engine\n",
+        "\n",
+        "%time\n",
+        "t=pool.map(f, pargs)\t# parallel function map\n",
+        "pool.close()\t# close the parallel engine\n"
+      ],
+      "execution_count": 13,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "CPU times: user 3 µs, sys: 1 µs, total: 4 µs\n",
+            "Wall time: 8.11 µs\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "DWJfrJ9rxr-l",
+        "colab_type": "code",
+        "colab": {
+          "base_uri": "https://localhost:8080/",
+          "height": 54
+        },
+        "outputId": "598de1a3-c69c-4ba2-de72-ac9c25f98d41"
+      },
+      "source": [
+        "%time t=map(f, pargs)"
+      ],
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "text": [
+            "CPU times: user 216 µs, sys: 0 ns, total: 216 µs\n",
+            "Wall time: 224 µs\n"
+          ],
+          "name": "stdout"
+        }
+      ]
+    }
+  ]
+}
